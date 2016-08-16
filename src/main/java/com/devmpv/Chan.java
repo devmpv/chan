@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-public class ChanApplication {
+public class Chan {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ChanApplication.class, args);
+		SpringApplication.run(Chan.class, args);
 	}
 }
