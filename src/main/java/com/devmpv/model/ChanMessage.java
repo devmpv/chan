@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 public class ChanMessage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
 	private String title;
 
@@ -23,6 +23,14 @@ public class ChanMessage {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id")
 	Set<Attachment> attachments;
+
+	public ChanMessage(String title, String text) {
+		this.title = title;
+		this.text = text;
+	}
+
+	protected ChanMessage() {
+	}
 
 	public String getText() {
 		return text;
@@ -38,5 +46,9 @@ public class ChanMessage {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Object getId() {
+		return id;
 	}
 }
