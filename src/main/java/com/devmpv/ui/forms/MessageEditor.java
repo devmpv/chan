@@ -11,8 +11,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
@@ -22,49 +24,54 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SpringComponent
 @UIScope
-public class MessageEditor extends VerticalLayout {
+public class MessageEditor extends Window {
+
+	public interface ChangeHandler {
+
+		void onChange();
+	}
 
 	private static final long serialVersionUID = -7818474729853684893L;
 
 	private final MessageRepository repository;
 
 	/**
-	 * The currently edited customer
+	 * The currently edited message
 	 */
 	private ChanMessage message;
 
-	/* Fields to edit properties in Customer entity */
 	TextField title = new TextField("Title");
-	TextField text = new TextField("Text");
-
+	RichTextArea text = new RichTextArea("Text");
 	/* Action buttons */
 	Button save = new Button("Save", FontAwesome.SAVE);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", FontAwesome.TRASH_O);
+
 	CssLayout actions = new CssLayout(save, cancel, delete);
 
 	@Autowired
 	public MessageEditor(MessageRepository repository) {
 		this.repository = repository;
-
-		addComponents(title, text, actions);
-
-		// Configure and style components
-		setSpacing(true);
+		title.setWidth("100%");
+		VerticalLayout mainLayout = new VerticalLayout(title, text, actions);
+		mainLayout.setSpacing(true);
+		mainLayout.setMargin(true);
+		setModal(true);
+		setContent(mainLayout);
+		setResizable(false);
+		center();
+		setVisible(false);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
 		// wire action buttons to save, delete and reset
-		save.addClickListener(e -> repository.save(message));
+		save.addClickListener(e -> {
+			repository.save(message);
+			this.setVisible(false);
+		});
 		delete.addClickListener(e -> repository.delete(message));
 		cancel.addClickListener(e -> editMessage(message));
-		setVisible(false);
-	}
-
-	public interface ChangeHandler {
-
-		void onChange();
 	}
 
 	public final void editMessage(ChanMessage msg) {
@@ -75,14 +82,8 @@ public class MessageEditor extends VerticalLayout {
 			message = msg;
 		}
 		cancel.setVisible(persisted);
-
 		BeanFieldGroup.bindFieldsUnbuffered(message, this);
-
 		setVisible(true);
-
-		// A hack to ensure the whole form is visible
-		save.focus();
-		title.selectAll();
 	}
 
 	public void setChangeHandler(ChangeHandler h) {

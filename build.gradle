@@ -29,12 +29,13 @@ repositories {
 	mavenCentral()
 	maven { url "https://repo.spring.io/snapshot" }
 	maven { url "https://repo.spring.io/milestone" }
+	maven { url "http://maven.vaadin.com/vaadin-addons" }
 }
 
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-data-jpa")
 	compile("com.vaadin:vaadin-spring-boot-starter:1.0.0")
-	compile("com.vaadin:vaadin-push:$vaadinVer")
+	compile("org.vaadin:viritin:1.55")
 	runtime("com.h2database:h2")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }

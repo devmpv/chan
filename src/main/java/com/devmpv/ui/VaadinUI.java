@@ -46,8 +46,9 @@ public class VaadinUI extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 		// build layout
+		addWindow(editor);
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-		VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
+		VerticalLayout mainLayout = new VerticalLayout(actions, grid);
 		setContent(mainLayout);
 
 		// Configure layouts and components
@@ -57,10 +58,14 @@ public class VaadinUI extends UI {
 
 		grid.setHeightByRows(10);
 		grid.setColumns("title", "text");
-		filter.setInputPrompt("Filter by last name");
+		grid.setWidth("100%");
+		filter.setInputPrompt("Filter title");
 		filter.addTextChangeListener(e -> listMessages(e.getText()));
 		// Instantiate and edit new Customer the new button is clicked
-		addNewBtn.addClickListener(e -> editor.editMessage(new ChanMessage("", "")));
+		addNewBtn.addClickListener(e -> {
+			editor.setVisible(true);
+			editor.editMessage(new ChanMessage("", ""));
+		});
 
 		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
@@ -77,7 +82,7 @@ public class VaadinUI extends UI {
 			grid.setContainerDataSource(new BeanItemContainer(ChanMessage.class, (Collection) repo.findAll()));
 		} else {
 			grid.setContainerDataSource(
-					new BeanItemContainer(ChanMessage.class, (Collection) repo.findByTitleStartsWithIgnoreCase(text)));
+					new BeanItemContainer(ChanMessage.class, repo.findByTitleStartsWithIgnoreCase(text)));
 		}
 	}
 	// end::listMessages[]

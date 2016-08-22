@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -18,18 +19,23 @@ public class ChanMessage {
 
 	private String title;
 
+	@Lob
 	private String text;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id")
 	Set<Attachment> attachments;
 
+	protected ChanMessage() {
+	}
+
 	public ChanMessage(String title, String text) {
 		this.title = title;
 		this.text = text;
 	}
 
-	protected ChanMessage() {
+	public Object getId() {
+		return id;
 	}
 
 	public String getText() {
@@ -46,9 +52,5 @@ public class ChanMessage {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public Object getId() {
-		return id;
 	}
 }
