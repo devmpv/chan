@@ -4,6 +4,5 @@
 .mvn
 *.log
 bin
-gradle
-/.gradle/
 /build/
+/target/
