@@ -2,7 +2,7 @@ package com.devmpv.ui.forms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.devmpv.model.ChanMessage;
+import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.event.ShortcutAction;
@@ -38,7 +38,7 @@ public class MessageEditor extends Window {
 	/**
 	 * The currently edited message
 	 */
-	private ChanMessage message;
+	private Message message;
 
 	TextField title = new TextField("Title");
 	RichTextArea text = new RichTextArea("Text");
@@ -67,6 +67,7 @@ public class MessageEditor extends Window {
 
 		// wire action buttons to save, delete and reset
 		save.addClickListener(e -> {
+			message.setTimestamp(System.currentTimeMillis());
 			repository.save(message);
 			this.setVisible(false);
 		});
@@ -74,10 +75,10 @@ public class MessageEditor extends Window {
 		cancel.addClickListener(e -> editMessage(message));
 	}
 
-	public final void editMessage(ChanMessage msg) {
+	public final void editMessage(Message msg) {
 		final boolean persisted = msg.getId() != null;
 		if (persisted) {
-			message = repository.findOne((Long) msg.getId());
+			message = repository.findOne(msg.getId());
 		} else {
 			message = msg;
 		}

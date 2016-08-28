@@ -3,7 +3,7 @@ package com.devmpv.ui;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.LazyList;
 
-import com.devmpv.model.ChanMessage;
+import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.service.MessageService;
 import com.devmpv.ui.forms.MessageEditor;
@@ -57,7 +57,7 @@ public class ThreadUI extends UI {
 		// Instantiate and edit new Customer the new button is clicked
 		addNewBtn.addClickListener(e -> {
 			editor.setVisible(true);
-			editor.editMessage(new ChanMessage("", ""));
+			editor.editMessage(new Message("", ""));
 		});
 
 		// Listen changes made by the editor, refresh data from backend

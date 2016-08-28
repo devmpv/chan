@@ -5,6 +5,6 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface MessageRepository extends CrudRepository<ChanMessage, Serializable> {
-	List<ChanMessage> findByTitleStartsWithIgnoreCase(String title);
+public interface MessageRepository extends CrudRepository<Message, Serializable> {
+	List<Message> findByTitleStartsWithIgnoreCase(String title);
 }
