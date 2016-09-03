@@ -26,16 +26,16 @@ public class ThreadUI extends UI {
 	private Button addNewBtn;
 	private TextField filter = new TextField();
 	private MessageEditor editor;
+	private MessageService msgSvc;
 
 	private LazyList lazylist;
 
 	@Autowired
 	public ThreadUI(MessageRepository repo, MessageEditor editor, MessageService msgSvc) {
 		this.editor = editor;
+		this.msgSvc = msgSvc;
 		this.filter = new TextField();
-		this.lazylist = new LazyList(() -> {
-			return msgSvc.getMoreMessages(10);
-		});
+		this.lazylist = newList();
 		this.addNewBtn = new Button("New message", FontAwesome.PLUS);
 	}
 
@@ -51,6 +51,8 @@ public class ThreadUI extends UI {
 		actions.setSpacing(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
+		mainLayout.setSizeFull();
+		mainLayout.setExpandRatio(lazylist, 1);
 
 		filter.setInputPrompt("Filter title");
 		// filter.addTextChangeListener(e -> listMessages(e.getText()));
@@ -63,9 +65,15 @@ public class ThreadUI extends UI {
 		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			// listMessages(filter.getValue());
+			mainLayout.replaceComponent(mainLayout.getComponent(1), newList());
 		});
 		// listMessages("");
+	}
+
+	public LazyList newList() {
+		return new LazyList(() -> {
+			return msgSvc.getMoreMessages(10);
+		});
 	}
 
 	// tag::listMessages[]

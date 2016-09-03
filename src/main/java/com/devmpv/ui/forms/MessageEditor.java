@@ -35,44 +35,41 @@ public class MessageEditor extends Window {
 
 	private final MessageRepository repository;
 
-	/**
-	 * The currently edited message
-	 */
 	private Message message;
 
 	TextField title = new TextField("Title");
 	RichTextArea text = new RichTextArea("Text");
-	/* Action buttons */
 	Button save = new Button("Save", FontAwesome.SAVE);
-	Button cancel = new Button("Cancel");
-	Button delete = new Button("Delete", FontAwesome.TRASH_O);
+	Button cancel = new Button("Cancel", FontAwesome.EJECT);
 
-	CssLayout actions = new CssLayout(save, cancel, delete);
+	CssLayout actions = new CssLayout(save, cancel);
 
 	@Autowired
 	public MessageEditor(MessageRepository repository) {
 		this.repository = repository;
 		title.setWidth("100%");
+		text.setWidth("100%");
 		VerticalLayout mainLayout = new VerticalLayout(title, text, actions);
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(true);
-		setModal(true);
+		setModal(false);
 		setContent(mainLayout);
-		setResizable(false);
+		setResizable(true);
 		center();
+		setClosable(false);
 		setVisible(false);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+		cancel.setStyleName(ValoTheme.BUTTON_QUIET);
+		cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 
-		// wire action buttons to save, delete and reset
 		save.addClickListener(e -> {
 			message.setTimestamp(System.currentTimeMillis());
 			repository.save(message);
 			this.setVisible(false);
 		});
-		delete.addClickListener(e -> repository.delete(message));
-		cancel.addClickListener(e -> editMessage(message));
+		cancel.addClickListener(e -> this.setVisible(false));
 	}
 
 	public final void editMessage(Message msg) {
@@ -82,14 +79,11 @@ public class MessageEditor extends Window {
 		} else {
 			message = msg;
 		}
-		cancel.setVisible(persisted);
 		BeanFieldGroup.bindFieldsUnbuffered(message, this);
 		setVisible(true);
 	}
 
 	public void setChangeHandler(ChangeHandler h) {
 		save.addClickListener(e -> h.onChange());
-		delete.addClickListener(e -> h.onChange());
 	}
-
 }
