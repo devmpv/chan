@@ -4,22 +4,32 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
+@Table(indexes = { @Index(columnList = "md5", unique = true) })
 public class Attachment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
-	@Lob
-	private String object;
+	private String md5;
 
-	public String getObject() {
-		return object;
+	public Long getId() {
+		return id;
 	}
 
-	public void setObject(String object) {
-		this.object = object;
+	public String getMd5() {
+		return md5;
 	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setMd5(String md5) {
+		this.md5 = md5;
+	}
+
 }

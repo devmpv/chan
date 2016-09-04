@@ -23,12 +23,13 @@ public class ThreadUI extends UI {
 
 	private static final long serialVersionUID = -1978928524166597899L;
 
+	private static final int SIZE = 20;
 	private Button addNewBtn;
-	private TextField filter = new TextField();
+	private TextField filter;
 	private MessageEditor editor;
 	private MessageService msgSvc;
-
 	private LazyList lazylist;
+	private int page = 0;
 
 	@Autowired
 	public ThreadUI(MessageRepository repo, MessageEditor editor, MessageService msgSvc) {
@@ -41,13 +42,11 @@ public class ThreadUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
-		// build layout
 		addWindow(editor);
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
 		VerticalLayout mainLayout = new VerticalLayout(actions, lazylist);
 		setContent(mainLayout);
 
-		// Configure layouts and components
 		actions.setSpacing(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
@@ -55,35 +54,23 @@ public class ThreadUI extends UI {
 		mainLayout.setExpandRatio(lazylist, 1);
 
 		filter.setInputPrompt("Filter title");
-		// filter.addTextChangeListener(e -> listMessages(e.getText()));
-		// Instantiate and edit new Customer the new button is clicked
 		addNewBtn.addClickListener(e -> {
 			editor.setVisible(true);
 			editor.editMessage(new Message("", ""));
 		});
 
-		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
 			mainLayout.replaceComponent(mainLayout.getComponent(1), newList());
 		});
-		// listMessages("");
 	}
 
 	public LazyList newList() {
+		page = 0;
 		return new LazyList(() -> {
-			return msgSvc.getMoreMessages(10);
+			int currentPage = page;
+			page++;
+			return msgSvc.getMoreMessages(currentPage, SIZE, null);
 		});
 	}
-
-	// tag::listMessages[]
-	/*
-	 * @SuppressWarnings({ "rawtypes", "unchecked" }) private void
-	 * listMessages(String text) { if (StringUtils.isEmpty(text)) {
-	 * grid.setContainerDataSource(new BeanItemContainer(ChanMessage.class,
-	 * (Collection) repo.findAll())); } else { grid.setContainerDataSource( new
-	 * BeanItemContainer(ChanMessage.class,
-	 * repo.findByTitleStartsWithIgnoreCase(text))); } }
-	 */
-	// end::listMessages[]
 }

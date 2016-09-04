@@ -1,10 +1,12 @@
 package com.devmpv.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +20,8 @@ public class Message {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	private Long thread;
+
 	private String title;
 
 	@Lob
@@ -27,9 +31,9 @@ public class Message {
 	@Column(nullable = false)
 	private Long timestamp;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "id")
-	Set<Attachment> attachments;
+	Set<Attachment> attachments = new HashSet<>();
 
 	protected Message() {
 	}
@@ -37,6 +41,10 @@ public class Message {
 	public Message(String title, String text) {
 		this.title = title;
 		this.text = text;
+	}
+
+	public Set<Attachment> getAttachments() {
+		return attachments;
 	}
 
 	public Long getId() {
@@ -47,6 +55,10 @@ public class Message {
 		return text;
 	}
 
+	public Long getThread() {
+		return thread;
+	}
+
 	public Long getTimestamp() {
 		return timestamp;
 	}
@@ -55,8 +67,16 @@ public class Message {
 		return title;
 	}
 
+	public void setAttachments(Set<Attachment> attachments) {
+		this.attachments = attachments;
+	}
+
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public void setThread(Long thread) {
+		this.thread = thread;
 	}
 
 	public void setTimestamp(Long timestamp) {
