@@ -1,10 +1,14 @@
 package com.devmpv.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -15,6 +19,9 @@ public class Attachment {
 	private Long id;
 
 	private String md5;
+
+	@ManyToMany(mappedBy = "attachments")
+	private Set<Message> messages = new HashSet<>();
 
 	public Long getId() {
 		return id;

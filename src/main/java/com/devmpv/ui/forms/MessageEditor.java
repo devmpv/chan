@@ -3,6 +3,8 @@ package com.devmpv.ui.forms;
 import java.io.File;
 import java.util.HashSet;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.easyuploads.UploadField.FieldType;
@@ -22,6 +24,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -100,21 +103,17 @@ public class MessageEditor extends Window {
 			}
 		});
 
-		save.addClickListener(e -> {
-			message.setTimestamp(System.currentTimeMillis());
-			Attachment attachment;
-			if (!upload.isEmpty()) {
-				attachment = this.attachSvc.add((File) upload.getValue());
-				if (null != attachment.getId()) {
-					HashSet<Attachment> value = new HashSet<>();
-					value.add(attachment);
-					message.setAttachments(value);
-				}
+		save.addClickListener(listener -> {
+			try {
+				saveMessage();
+			} catch (Exception e) {
+				Notification.show("Error", e.getLocalizedMessage(), Notification.Type.TRAY_NOTIFICATION);
 			}
-			repository.save(message);
-			this.setVisible(false);
 		});
-		cancel.addClickListener(e -> this.setVisible(false));
+		cancel.addClickListener(e -> {
+			setVisible(false);
+			upload.clear();
+		});
 	}
 
 	public final void editMessage(Message msg) {
@@ -128,7 +127,25 @@ public class MessageEditor extends Window {
 		setVisible(true);
 	}
 
+	@Transactional
+	private void saveMessage() throws Exception {
+		message.setTimestamp(System.currentTimeMillis());
+		Attachment attachment;
+		if (!upload.isEmpty()) {
+			attachment = this.attachSvc.add((File) upload.getValue());
+			HashSet<Attachment> value = new HashSet<>();
+			value.add(attachment);
+			message.setAttachments(value);
+		}
+		msgRepo.save(message);
+		upload.clear();
+	}
+
 	public void setChangeHandler(ChangeHandler h) {
-		save.addClickListener(e -> h.onChange());
+		save.addClickListener(e -> {
+			if (null != message.getId()) {
+				h.onChange();
+			}
+		});
 	}
 }

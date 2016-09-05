@@ -41,17 +41,28 @@ public class AttachmentService {
 		}
 	}
 
-	public Attachment add(File value) {
-		Attachment attach = new Attachment();
+	public Attachment add(File value) throws Exception {
+		Attachment attach = null;
+		String md5 = "";
 		try {
-			String md5 = String.valueOf(DigestUtils.md5DigestAsHex(new FileInputStream(value)));
+			md5 = String.valueOf(DigestUtils.md5DigestAsHex(new FileInputStream(value)));
+			attach = repo.findByMd5(md5);
+			if (null != attach) {
+				throw new Exception("File alredy present on the board");
+			}
 			Files.copy(value.toPath(), storagePath.resolve(md5));
+			attach = new Attachment();
 			attach.setMd5(md5);
-			repo.save(attach);
+			attach = repo.save(attach);
+			return attach;
 		} catch (IOException e) {
 			LOG.error("Error saving attachment", e);
+			throw new Exception("Error saving attachment");
+		} finally {
+			if (!md5.isEmpty() && null == attach) {
+				Files.deleteIfExists(storagePath.resolve(md5));
+			}
 		}
-		return attach;
 	}
 
 	public Set<File> getFileSet(Set<Attachment> attach) {

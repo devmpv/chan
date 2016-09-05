@@ -21,8 +21,13 @@ public class MessageLayout extends MPanel {
 		RichText text = new RichText(message.getText());
 		setCaption(caption);
 		HorizontalLayout msgLayout = new HorizontalLayout();
+		msgLayout.setMargin(true);
+		msgLayout.setSpacing(true);
 		service.getFileSet(message.getAttachments()).forEach(file -> {
-			msgLayout.addComponent(new Image("", new FileResource(file)));
+			Image img = new Image("", new FileResource(file));
+			img.setHeight(100, Unit.PIXELS);
+			img.setWidth(100, Unit.PIXELS);
+			msgLayout.addComponent(img);
 		});
 		msgLayout.addComponent(text);
 		setContent(msgLayout);
