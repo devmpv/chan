@@ -18,7 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringUI
-@Theme("valo")
+@Theme("chan-chameleon")
 public class ThreadUI extends UI {
 
 	private static final long serialVersionUID = -1978928524166597899L;

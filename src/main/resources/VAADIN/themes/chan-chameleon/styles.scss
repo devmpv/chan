@@ -1,0 +1,7 @@
+@import "../chameleon/chameleon";
+@import "colors";
+
+.chan-chameleon {
+  @include chameleon;
+  @include colors;
+}
