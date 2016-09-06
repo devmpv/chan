@@ -16,9 +16,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ChameleonTheme;
 
 @SpringUI
-@Theme("chan-chameleon")
+@Theme(ChameleonTheme.THEME_NAME)
 public class ThreadUI extends UI {
 
 	private static final long serialVersionUID = -1978928524166597899L;

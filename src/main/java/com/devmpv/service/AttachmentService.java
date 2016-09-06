@@ -27,7 +27,7 @@ public class AttachmentService {
 	private AttachmentRepository repo;
 
 	@Autowired
-	public AttachmentService(@Value("${chan.filestorage}") String filestorage, AttachmentRepository repo)
+	public AttachmentService(@Value("${chan.file.path}") String filestorage, AttachmentRepository repo)
 			throws Exception {
 		this.repo = repo;
 		this.storagePath = Paths.get(filestorage.replaceFirst("^~", System.getProperty("user.home")));

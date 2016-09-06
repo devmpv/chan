@@ -1,18 +1,13 @@
 package com.devmpv.ui.forms;
 
 import java.io.File;
-import java.util.HashSet;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.easyuploads.UploadField.FieldType;
 
-import com.devmpv.model.Attachment;
 import com.devmpv.model.Message;
-import com.devmpv.model.MessageRepository;
-import com.devmpv.service.AttachmentService;
+import com.devmpv.service.MessageService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -25,7 +20,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.RichTextArea;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -47,13 +42,12 @@ public class MessageEditor extends Window {
 
 	private static final long serialVersionUID = -7818474729853684893L;
 
-	private final MessageRepository msgRepo;
-	private final AttachmentService attachSvc;
+	private final MessageService msgSvc;
 
 	private Message message;
 
 	private final TextField title = new TextField("Title");
-	private final RichTextArea text = new RichTextArea("Text");
+	private final TextArea text = new TextArea("Text");
 	private final Button save = new Button("Save", FontAwesome.SAVE);
 	private final Button cancel = new Button("Cancel", FontAwesome.EJECT);
 	private final UploadField upload = new UploadField();
@@ -62,9 +56,8 @@ public class MessageEditor extends Window {
 	CssLayout actions = new CssLayout(save, cancel);
 
 	@Autowired
-	public MessageEditor(MessageRepository repository, AttachmentService attachSvc) {
-		this.attachSvc = attachSvc;
-		this.msgRepo = repository;
+	public MessageEditor(MessageService msgSvc) {
+		this.msgSvc = msgSvc;
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(true);
@@ -82,7 +75,7 @@ public class MessageEditor extends Window {
 		cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 		upload.setFieldType(FieldType.FILE);
 		upload.setAcceptFilter("image/*");
-		upload.setMaxFileSize(512000);
+		upload.setMaxFileSize(2097152);
 		upload.addListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 4616130244428056797L;
 
@@ -105,7 +98,8 @@ public class MessageEditor extends Window {
 
 		save.addClickListener(listener -> {
 			try {
-				saveMessage();
+				msgSvc.saveMessage(message, upload.getValue());
+				upload.clear();
 			} catch (Exception e) {
 				Notification.show("Error", e.getLocalizedMessage(), Notification.Type.TRAY_NOTIFICATION);
 			}
@@ -119,26 +113,12 @@ public class MessageEditor extends Window {
 	public final void editMessage(Message msg) {
 		final boolean persisted = msg.getId() != null;
 		if (persisted) {
-			message = msgRepo.findOne(msg.getId());
+			message = msgSvc.findOne(msg.getId());
 		} else {
 			message = msg;
 		}
 		BeanFieldGroup.bindFieldsUnbuffered(message, this);
 		setVisible(true);
-	}
-
-	@Transactional
-	private void saveMessage() throws Exception {
-		message.setTimestamp(System.currentTimeMillis());
-		Attachment attachment;
-		if (!upload.isEmpty()) {
-			attachment = this.attachSvc.add((File) upload.getValue());
-			HashSet<Attachment> value = new HashSet<>();
-			value.add(attachment);
-			message.setAttachments(value);
-		}
-		msgRepo.save(message);
-		upload.clear();
 	}
 
 	public void setChangeHandler(ChangeHandler h) {
