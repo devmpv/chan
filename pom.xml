@@ -70,11 +70,6 @@
    			<version>1.56</version>
 		</dependency>
 		<dependency>
-   			<groupId>org.vaadin</groupId>
-   			<artifactId>lazylist</artifactId>
-   			<version>0.0.2</version>
-		</dependency>
-		<dependency>
 		   <groupId>org.vaadin.addon</groupId>
 		   <artifactId>easyuploads</artifactId>
 		   <version>7.4.10</version>

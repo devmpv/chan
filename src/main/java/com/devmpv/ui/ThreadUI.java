@@ -1,7 +1,6 @@
 package com.devmpv.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.LazyList;
 
 import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
@@ -24,12 +23,12 @@ public class ThreadUI extends UI {
 
 	private static final long serialVersionUID = -1978928524166597899L;
 
-	private static final int SIZE = 20;
+	private static final int SIZE = 500;
 	private Button addNewBtn;
 	private TextField filter;
 	private MessageEditor editor;
 	private MessageService msgSvc;
-	private LazyList lazylist;
+	private VerticalLayout messageList;
 	private int page = 0;
 
 	@Autowired
@@ -37,24 +36,24 @@ public class ThreadUI extends UI {
 		this.editor = editor;
 		this.msgSvc = msgSvc;
 		this.filter = new TextField();
-		this.lazylist = newList();
-		this.addNewBtn = new Button("New message", FontAwesome.PLUS);
+		this.messageList = newList();
+		this.addNewBtn = new Button("Reply", FontAwesome.PLUS);
 	}
 
 	@Override
 	protected void init(VaadinRequest request) {
 		addWindow(editor);
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-		VerticalLayout mainLayout = new VerticalLayout(actions, lazylist);
+		VerticalLayout mainLayout = new VerticalLayout(actions, messageList);
 		setContent(mainLayout);
 
 		actions.setSpacing(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
 		mainLayout.setSizeFull();
-		mainLayout.setExpandRatio(lazylist, 1);
+		mainLayout.setExpandRatio(messageList, 1);
 
-		filter.setInputPrompt("Filter title");
+		filter.setInputPrompt("Search...");
 		addNewBtn.addClickListener(e -> {
 			editor.setVisible(true);
 			editor.editMessage(new Message("", ""));
@@ -62,16 +61,15 @@ public class ThreadUI extends UI {
 
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			mainLayout.replaceComponent(mainLayout.getComponent(1), newList());
+			messageList = newList();
+			mainLayout.replaceComponent(mainLayout.getComponent(1), messageList);
 		});
 	}
 
-	public LazyList newList() {
-		page = 0;
-		return new LazyList(() -> {
-			int currentPage = page;
-			page++;
-			return msgSvc.getMoreMessages(currentPage, SIZE, null);
-		});
+	public VerticalLayout newList() {
+		VerticalLayout result = new VerticalLayout();
+		result.setSpacing(true);
+		msgSvc.getMoreMessages(page, SIZE, null).forEach(comp -> result.addComponent(comp));
+		return result;
 	}
 }

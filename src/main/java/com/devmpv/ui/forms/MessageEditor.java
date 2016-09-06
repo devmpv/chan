@@ -17,14 +17,13 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * Message editor form
@@ -49,30 +48,32 @@ public class MessageEditor extends Window {
 	private final TextField title = new TextField("Title");
 	private final TextArea text = new TextArea("Text");
 	private final Button save = new Button("Save", FontAwesome.SAVE);
-	private final Button cancel = new Button("Cancel", FontAwesome.EJECT);
+	private final Button cancel = new Button("Cancel", FontAwesome.UNDO);
 	private final UploadField upload = new UploadField();
 	private Image image1 = new Image();
 
-	CssLayout actions = new CssLayout(save, cancel);
+	HorizontalLayout actions = new HorizontalLayout(save, cancel);
 
 	@Autowired
 	public MessageEditor(MessageService msgSvc) {
 		this.msgSvc = msgSvc;
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
-		mainLayout.setSpacing(true);
+		mainLayout.setSpacing(false);
 		mainLayout.setMargin(true);
+		mainLayout.setSizeFull();
+		mainLayout.setExpandRatio(text, 1);
 		setModal(false);
 		setContent(mainLayout);
-		setResizable(false);
+		setResizable(true);
 		setClosable(false);
 		setVisible(false);
+		setWidth("30%");
+		setHeight("45%");
 		title.setWidth("100%");
-		text.setWidth("100%");
-		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		text.setSizeFull();
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		cancel.setStyleName(ValoTheme.BUTTON_QUIET);
 		cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
+		upload.setCaption(null);
 		upload.setFieldType(FieldType.FILE);
 		upload.setAcceptFilter("image/*");
 		upload.setMaxFileSize(2097152);
@@ -101,7 +102,7 @@ public class MessageEditor extends Window {
 				msgSvc.saveMessage(message, upload.getValue());
 				upload.clear();
 			} catch (Exception e) {
-				Notification.show("Error", e.getLocalizedMessage(), Notification.Type.TRAY_NOTIFICATION);
+				Notification.show("Error", e.getLocalizedMessage(), Notification.Type.HUMANIZED_MESSAGE);
 			}
 		});
 		cancel.addClickListener(e -> {
