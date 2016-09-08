@@ -41,12 +41,15 @@ public class MessageEditor extends Window {
 
 	private static final long serialVersionUID = -7818474729853684893L;
 
-	private final MessageService msgSvc;
-
 	private Message message;
 
 	private final TextField title = new TextField("Title");
 	private final TextArea text = new TextArea("Text");
+
+	public TextArea getText() {
+		return text;
+	}
+
 	private final Button save = new Button("Save", FontAwesome.SAVE);
 	private final Button cancel = new Button("Cancel", FontAwesome.UNDO);
 	private final UploadField upload = new UploadField();
@@ -56,7 +59,7 @@ public class MessageEditor extends Window {
 
 	@Autowired
 	public MessageEditor(MessageService msgSvc) {
-		this.msgSvc = msgSvc;
+		msgSvc.setEditor(this);
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
 		mainLayout.setSpacing(false);
 		mainLayout.setMargin(true);
@@ -111,12 +114,9 @@ public class MessageEditor extends Window {
 		});
 	}
 
-	public final void editMessage(Message msg) {
-		final boolean persisted = msg.getId() != null;
-		if (persisted) {
-			message = msgSvc.findOne(msg.getId());
-		} else {
-			message = msg;
+	public final void editMessage() {
+		if (null == message) {
+			message = new Message("", "");
 		}
 		BeanFieldGroup.bindFieldsUnbuffered(message, this);
 		setVisible(true);
@@ -126,6 +126,7 @@ public class MessageEditor extends Window {
 		save.addClickListener(e -> {
 			if (null != message.getId()) {
 				h.onChange();
+				message = new Message("", "");
 			}
 		});
 	}
