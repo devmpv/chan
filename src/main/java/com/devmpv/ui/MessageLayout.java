@@ -4,10 +4,8 @@ import static com.vaadin.ui.themes.ChameleonTheme.PANEL_BUBBLE;
 
 import java.time.Instant;
 
-import org.vaadin.viritin.fields.MCheckBox;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.label.RichText;
-import org.vaadin.viritin.layouts.MPanel;
 
 import com.devmpv.model.Message;
 import com.devmpv.service.AttachmentService;
@@ -15,13 +13,15 @@ import com.devmpv.service.MessageService;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ChameleonTheme;
 
-public class MessageLayout extends MPanel {
+public class MessageLayout extends Panel {
 
 	private static final long serialVersionUID = 7811192741949505972L;
 
@@ -49,7 +49,7 @@ public class MessageLayout extends MPanel {
 	private HorizontalLayout createHeader(Message message, MessageService msgSvc) {
 		HorizontalLayout header = new HorizontalLayout();
 		header.setSpacing(true);
-		MCheckBox checkBox = new MCheckBox();
+		CheckBox checkBox = new CheckBox();
 		Label title = new Label(String.format("<h4>%s<h4>", message.getTitle()), ContentMode.HTML);
 		Label name = new Label("<h4>Anonymous<h4>", ContentMode.HTML);
 		MLabel id = new MLabel(String.format("№%d", message.getId()));
