@@ -18,10 +18,11 @@ import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.ui.MessageLayout;
 import com.devmpv.ui.forms.MessageEditor;
+import com.vaadin.server.FileResource;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Window;
 
 @Service
@@ -34,14 +35,6 @@ public class MessageService {
 	private AttachmentService attachSvc;
 
 	private MessageEditor editor;
-
-	public MessageEditor getEditor() {
-		return editor;
-	}
-
-	public ClickListener getReplyListener() {
-		return replyListener;
-	}
 
 	private ClickListener replyListener = new ClickListener() {
 		private static final long serialVersionUID = -4154995187910480613L;
@@ -59,8 +52,16 @@ public class MessageService {
 
 		@Override
 		public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-			popup.setContent(new VerticalLayout(event.getComponent()));
-			popup.setVisible(true);
+			Attachment attach = (Attachment) ((Image) event.getComponent()).getData();
+			if (!attach.equals(popup.getData())) {
+				Image img = new Image(null, new FileResource(attachSvc.getFile(attach)));
+				popup.setContent(img);
+				popup.center();
+				popup.setData(((Image) event.getComponent()).getData());
+				popup.setVisible(true);
+			} else {
+				popup.setVisible(!popup.isVisible());
+			}
 		}
 	};
 
@@ -68,11 +69,27 @@ public class MessageService {
 
 	private Window popup;
 
+	public Message findOne(Long id) {
+		return msgRepo.findOne(id);
+	}
+
+	public MessageEditor getEditor() {
+		return editor;
+	}
+
 	public List<Component> getMoreMessages(int page, int size, Sort sort) {
 		List<Component> result = new ArrayList<>();
 		msgRepo.findAll(new PageRequest(page, size, sort))
 				.forEach(msg -> result.add(new MessageLayout(msg, attachSvc, this)));
 		return result;
+	}
+
+	public com.vaadin.event.MouseEvents.ClickListener getPopupListener() {
+		return popupListener;
+	}
+
+	public ClickListener getReplyListener() {
+		return replyListener;
 	}
 
 	@Transactional
@@ -87,16 +104,8 @@ public class MessageService {
 		return msgRepo.save(message);
 	}
 
-	public Message findOne(Long id) {
-		return msgRepo.findOne(id);
-	}
-
 	public void setEditor(MessageEditor editor) {
 		this.editor = editor;
-	}
-
-	public com.vaadin.event.MouseEvents.ClickListener getPopupListener() {
-		return popupListener;
 	}
 
 	public void setPopup(Window popup) {

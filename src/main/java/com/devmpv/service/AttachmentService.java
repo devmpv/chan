@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -65,10 +66,14 @@ public class AttachmentService {
 		}
 	}
 
-	public Set<File> getFileSet(Set<Attachment> attach) {
-		Set<File> result = new HashSet<>();
+	public File getFile(Attachment attachment) {
+		return storagePath.resolve(attachment.getMd5()).toFile();
+	}
+
+	public Map<Attachment, File> getFileSet(Set<Attachment> attach) {
+		Map<Attachment, File> result = new HashMap<>();
 		attach.stream().filter(a -> Files.exists(storagePath.resolve(a.getMd5()))).forEach(a -> {
-			result.add(storagePath.resolve(a.getMd5()).toFile());
+			result.put(a, getFile(a));
 		});
 		return result;
 	}

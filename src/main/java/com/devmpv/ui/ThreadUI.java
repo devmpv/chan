@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.service.MessageService;
 import com.devmpv.ui.forms.MessageEditor;
+import com.devmpv.ui.forms.PopupViewer;
 import com.vaadin.annotations.Theme;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,7 +15,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ChameleonTheme;
 
 @SpringUI
@@ -31,7 +29,7 @@ public class ThreadUI extends UI {
 	private MessageEditor editor;
 	private MessageService msgSvc;
 	private VerticalLayout messageList;
-	private Window popup;
+	private PopupViewer popup;
 	private int page = 0;
 
 	@Autowired
@@ -41,24 +39,14 @@ public class ThreadUI extends UI {
 		this.filter = new TextField();
 		this.messageList = newList();
 		this.addNewBtn = new Button("Reply", FontAwesome.PLUS);
-		this.popup = new Window();
+		this.popup = new PopupViewer();
 	}
 
 	@Override
 	protected void init(VaadinRequest request) {
 		addWindow(editor);
 		addWindow(popup);
-		popup.setVisible(false);
-		popup.setModal(false);
-		popup.center();
-		popup.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 2307250604465836302L;
 
-			@Override
-			public void click(ClickEvent event) {
-				popup.setVisible(false);
-			}
-		});
 		msgSvc.setPopup(popup);
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
 		VerticalLayout mainLayout = new VerticalLayout(actions, messageList);

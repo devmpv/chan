@@ -31,8 +31,9 @@ public class MessageLayout extends Panel {
 		RichText text = new RichText(message.getText());
 		msgLayout.setSpacing(true);
 		msgLayout.setMargin(true);
-		service.getFileSet(message.getAttachments()).forEach(file -> {
-			Image img = new Image(null, new FileResource(file));
+		service.getFileSet(message.getAttachments()).entrySet().forEach(entry -> {
+			Image img = new Image(null, new FileResource(entry.getValue()));
+			img.setData(entry.getKey());
 			img.setHeight(100, Unit.PIXELS);
 			img.setWidth(100, Unit.PIXELS);
 			img.addClickListener(msgSvc.getPopupListener());

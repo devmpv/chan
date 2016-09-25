@@ -38,5 +38,4 @@ public class Attachment {
 	public void setMd5(String md5) {
 		this.md5 = md5;
 	}
-
 }
