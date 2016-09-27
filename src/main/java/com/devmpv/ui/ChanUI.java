@@ -2,6 +2,7 @@ package com.devmpv.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.devmpv.model.Boards;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.service.MessageService;
 import com.devmpv.ui.forms.MessageEditor;
@@ -12,14 +13,15 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ChameleonTheme;
 
-@SpringUI
+@SpringUI(path = "b")
 @Theme(ChameleonTheme.THEME_NAME)
-public class ThreadUI extends UI {
+public class ChanUI extends UI {
 
 	private static final long serialVersionUID = -1978928524166597899L;
 
@@ -33,7 +35,7 @@ public class ThreadUI extends UI {
 	private int page = 0;
 
 	@Autowired
-	public ThreadUI(MessageRepository repo, MessageEditor editor, MessageService msgSvc) {
+	public ChanUI(MessageRepository repo, MessageEditor editor, MessageService msgSvc) {
 		this.editor = editor;
 		this.msgSvc = msgSvc;
 		this.filter = new TextField();
@@ -44,6 +46,23 @@ public class ThreadUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
+		String path = request.getPathInfo();
+		if (null == path || "/".equals(path)) {
+			createMainView();
+			return;
+		}
+		// path.substring(1);
+		if (null != Boards.valueOf(path)) {
+			createThreadView();
+		}
+
+	}
+
+	private void createMainView() {
+		setContent(new Label("Main page!"));
+	}
+
+	private void createThreadView() {
 		addWindow(editor);
 		addWindow(popup);
 

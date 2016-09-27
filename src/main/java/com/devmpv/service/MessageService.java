@@ -69,14 +69,6 @@ public class MessageService {
 
 	private Window popup;
 
-	public Message findOne(Long id) {
-		return msgRepo.findOne(id);
-	}
-
-	public MessageEditor getEditor() {
-		return editor;
-	}
-
 	public List<Component> getMoreMessages(int page, int size, Sort sort) {
 		List<Component> result = new ArrayList<>();
 		msgRepo.findAll(new PageRequest(page, size, sort))
