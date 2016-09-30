@@ -32,7 +32,7 @@ public class Message {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "message_attachment")
-	Set<Attachment> attachments = new HashSet<>();
+	private Set<Attachment> attachments = new HashSet<>();
 
 	protected Message() {
 	}

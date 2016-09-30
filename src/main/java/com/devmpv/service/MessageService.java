@@ -16,14 +16,15 @@ import org.springframework.stereotype.Service;
 import com.devmpv.model.Attachment;
 import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
+import com.devmpv.ui.BoardUI;
 import com.devmpv.ui.MessageLayout;
-import com.devmpv.ui.forms.MessageEditor;
+import com.devmpv.ui.forms.PopupViewer;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FileResource;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.UI;
 
 @Service
 public class MessageService {
@@ -34,24 +35,12 @@ public class MessageService {
 	@Autowired
 	private AttachmentService attachSvc;
 
-	private MessageEditor editor;
-
-	private ClickListener replyListener = new ClickListener() {
-		private static final long serialVersionUID = -4154995187910480613L;
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-			editor.editMessage();
-			editor.getText().setValue(
-					editor.getText().getValue().concat(">").concat((String) event.getButton().getData()).concat("\n"));
-		}
-	};
-
-	private com.vaadin.event.MouseEvents.ClickListener popupListener = new com.vaadin.event.MouseEvents.ClickListener() {
+	private ClickListener popupListener = new ClickListener() {
 		private static final long serialVersionUID = 6236981282218000159L;
 
 		@Override
-		public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+		public void click(ClickEvent event) {
+			PopupViewer popup = ((BoardUI) UI.getCurrent()).getPopup();
 			Attachment attach = (Attachment) ((Image) event.getComponent()).getData();
 			if (!attach.equals(popup.getData())) {
 				Image img = new Image(null, new FileResource(attachSvc.getFile(attach)));
@@ -67,8 +56,6 @@ public class MessageService {
 
 	private TextProcessor processor = BBProcessorFactory.getInstance().create();
 
-	private Window popup;
-
 	public List<Component> getMoreMessages(int page, int size, Sort sort) {
 		List<Component> result = new ArrayList<>();
 		msgRepo.findAll(new PageRequest(page, size, sort))
@@ -78,10 +65,6 @@ public class MessageService {
 
 	public com.vaadin.event.MouseEvents.ClickListener getPopupListener() {
 		return popupListener;
-	}
-
-	public ClickListener getReplyListener() {
-		return replyListener;
 	}
 
 	@Transactional
@@ -94,13 +77,5 @@ public class MessageService {
 		}
 		message.setText(processor.process(message.getText()));
 		return msgRepo.save(message);
-	}
-
-	public void setEditor(MessageEditor editor) {
-		this.editor = editor;
-	}
-
-	public void setPopup(Window popup) {
-		this.popup = popup;
 	}
 }

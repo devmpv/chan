@@ -59,7 +59,6 @@ public class MessageEditor extends Window {
 
 	@Autowired
 	public MessageEditor(MessageService msgSvc) {
-		msgSvc.setEditor(this);
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
 		mainLayout.setSpacing(false);
 		mainLayout.setMargin(true);

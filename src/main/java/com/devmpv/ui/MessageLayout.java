@@ -10,20 +10,36 @@ import org.vaadin.viritin.label.RichText;
 import com.devmpv.model.Message;
 import com.devmpv.service.AttachmentService;
 import com.devmpv.service.MessageService;
+import com.devmpv.ui.forms.MessageEditor;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ChameleonTheme;
 
 public class MessageLayout extends Panel {
 
 	private static final long serialVersionUID = 7811192741949505972L;
+
+	private static final ClickListener replyListener = new ClickListener() {
+		private static final long serialVersionUID = -4154995187910480613L;
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			MessageEditor editor = ((BoardUI) UI.getCurrent()).getEditor();
+			editor.editMessage();
+			editor.getText().setValue(
+					editor.getText().getValue().concat(">").concat((String) event.getButton().getData()).concat("\n"));
+		}
+	};
 
 	public MessageLayout(Message message, AttachmentService service, MessageService msgSvc) {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -60,7 +76,7 @@ public class MessageLayout extends Panel {
 		Button replyButton = new Button("Reply");
 		replyButton.setStyleName(ChameleonTheme.BUTTON_LINK);
 		replyButton.setData(String.valueOf(message.getId()));
-		replyButton.addClickListener(msgSvc.getReplyListener());
+		replyButton.addClickListener(replyListener);
 		header.addComponents(checkBox, title, name, time, id, hideButton, replyButton);
 		return header;
 	}
