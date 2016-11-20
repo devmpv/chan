@@ -1,5 +1,6 @@
 package com.devmpv.ui.views;
 
+import com.devmpv.model.Thread;
 import com.devmpv.service.MessageService;
 import com.devmpv.ui.forms.MessageEditor;
 import com.devmpv.ui.forms.PopupViewer;
@@ -16,29 +17,30 @@ public class ThreadView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -3492322718789886012L;
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		createThreadView();
-	}
-
 	private static final int SIZE = 500;
+
 	private Button addNewBtn;
 	private TextField filter;
 	private MessageEditor editor;
 	private PopupViewer popup;
-
+	private Thread thread;
 	private MessageService msgSvc;
-	private VerticalLayout messageList;
 
+	private VerticalLayout messageList;
 	private int page = 0;
 
 	public ThreadView(MessageService msgSvc) {
+		Thread thread = msgSvc.getThreadById(0);
+		if (null == thread) {
+			thread = msgSvc.saveThread(new Thread());
+		}
+		this.thread = thread;
 		this.msgSvc = msgSvc;
-		this.editor = new MessageEditor(msgSvc);
 		this.filter = new TextField();
 		this.messageList = newList();
 		this.addNewBtn = new Button("Reply", FontAwesome.PLUS);
 		this.popup = new PopupViewer();
+		this.editor = new MessageEditor(msgSvc, thread);
 	}
 
 	private void createThreadView() {
@@ -68,18 +70,23 @@ public class ThreadView extends VerticalLayout implements View {
 		});
 	}
 
-	public VerticalLayout newList() {
-		VerticalLayout result = new VerticalLayout();
-		result.setSpacing(true);
-		msgSvc.getMoreMessages(page, SIZE, null).forEach(comp -> result.addComponent(comp));
-		return result;
+	@Override
+	public void enter(ViewChangeEvent event) {
+		createThreadView();
+	}
+
+	public MessageEditor getEditor() {
+		return editor;
 	}
 
 	public PopupViewer getPopup() {
 		return popup;
 	}
 
-	public MessageEditor getEditor() {
-		return editor;
+	public VerticalLayout newList() {
+		VerticalLayout result = new VerticalLayout();
+		result.setSpacing(true);
+		msgSvc.getMoreMessages(page, SIZE, null).forEach(comp -> result.addComponent(comp));
+		return result;
 	}
 }

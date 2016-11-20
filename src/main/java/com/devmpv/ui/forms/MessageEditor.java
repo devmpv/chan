@@ -7,6 +7,7 @@ import org.vaadin.easyuploads.UploadField;
 import org.vaadin.easyuploads.UploadField.FieldType;
 
 import com.devmpv.model.Message;
+import com.devmpv.model.Thread;
 import com.devmpv.service.MessageService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -35,30 +36,25 @@ import com.vaadin.ui.Window;
 public class MessageEditor extends Window {
 
 	public interface ChangeHandler {
-
 		void onChange();
 	}
 
 	private static final long serialVersionUID = -7818474729853684893L;
 
 	private Message message;
+	private Thread thread;
 
 	private final TextField title = new TextField("Title");
 	private final TextArea text = new TextArea("Text");
-
-	public TextArea getText() {
-		return text;
-	}
-
 	private final Button save = new Button("Save", FontAwesome.SAVE);
 	private final Button cancel = new Button("Cancel", FontAwesome.UNDO);
 	private final UploadField upload = new UploadField();
 	private Image image1 = new Image();
-
-	HorizontalLayout actions = new HorizontalLayout(save, cancel);
+	private final HorizontalLayout actions = new HorizontalLayout(save, cancel);
 
 	@Autowired
-	public MessageEditor(MessageService msgSvc) {
+	public MessageEditor(MessageService msgSvc, Thread thread) {
+		this.thread = thread;
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
 		mainLayout.setSpacing(false);
 		mainLayout.setMargin(true);
@@ -115,18 +111,21 @@ public class MessageEditor extends Window {
 
 	public final void editMessage() {
 		if (null == message) {
-			message = new Message("", "");
+			message = new Message(thread, "", "");
+			upload.clear();
 		}
 		BeanFieldGroup.bindFieldsUnbuffered(message, this);
 		setVisible(true);
 	}
 
+	public TextArea getText() {
+		return text;
+	}
+
 	public void setChangeHandler(ChangeHandler h) {
-		save.addClickListener(e -> {
-			if (null != message.getId()) {
-				h.onChange();
-				message = new Message("", "");
-			}
-		});
+		if (null != message) {
+			message = null;
+		}
+		h.onChange();
 	}
 }

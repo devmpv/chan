@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.devmpv.model.Attachment;
 import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
+import com.devmpv.model.Thread;
+import com.devmpv.model.ThreadRepository;
 import com.devmpv.ui.BoardUI;
 import com.devmpv.ui.MessageLayout;
 import com.devmpv.ui.forms.PopupViewer;
@@ -34,6 +36,9 @@ public class MessageService {
 
 	@Autowired
 	private AttachmentService attachSvc;
+
+	@Autowired
+	private ThreadRepository threadRepo;
 
 	private ClickListener popupListener = new ClickListener() {
 		private static final long serialVersionUID = 6236981282218000159L;
@@ -67,6 +72,10 @@ public class MessageService {
 		return popupListener;
 	}
 
+	public Thread getThreadById(long id) {
+		return threadRepo.findOne(id);
+	}
+
 	@Transactional
 	public Message saveMessage(Message message, Object object) throws Exception {
 		message.setTimestamp(System.currentTimeMillis());
@@ -77,5 +86,10 @@ public class MessageService {
 		}
 		message.setText(processor.process(message.getText()));
 		return msgRepo.save(message);
+	}
+
+	@Transactional
+	public Thread saveThread(Thread thread) {
+		return threadRepo.save(thread);
 	}
 }

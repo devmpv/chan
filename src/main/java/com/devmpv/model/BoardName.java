@@ -1,5 +1,5 @@
 package com.devmpv.model;
 
-public enum Boards {
+public enum BoardName {
 	b, po;
 }

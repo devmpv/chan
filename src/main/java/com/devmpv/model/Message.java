@@ -9,9 +9,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Message {
@@ -19,7 +21,9 @@ public class Message {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private Long thread;
+	@ManyToOne
+	@JoinColumn(name = "thread_id", nullable = false)
+	private Thread thread;
 
 	private String title;
 
@@ -37,9 +41,10 @@ public class Message {
 	protected Message() {
 	}
 
-	public Message(String title, String text) {
+	public Message(Thread thread, String title, String text) {
 		this.title = title;
 		this.text = text;
+		this.thread = thread;
 	}
 
 	public Set<Attachment> getAttachments() {
@@ -54,7 +59,7 @@ public class Message {
 		return text;
 	}
 
-	public Long getThread() {
+	public Thread getThread() {
 		return thread;
 	}
 
@@ -74,7 +79,7 @@ public class Message {
 		this.text = text;
 	}
 
-	public void setThread(Long thread) {
+	public void setThread(Thread thread) {
 		this.thread = thread;
 	}
 

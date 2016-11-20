@@ -28,19 +28,19 @@ public class BoardUI extends UI {
 		this.msgSvc = msgSvc;
 	}
 
-	@Override
-	protected void init(VaadinRequest request) {
-		threadView = new ThreadView(msgSvc);
-		navigator = new Navigator(this, this);
-		navigator.addView("thread", threadView);
-		navigator.navigateTo("thread");
+	public MessageEditor getEditor() {
+		return threadView.getEditor();
 	}
 
 	public PopupViewer getPopup() {
 		return threadView.getPopup();
 	}
 
-	public MessageEditor getEditor() {
-		return threadView.getEditor();
+	@Override
+	protected void init(VaadinRequest request) {
+		threadView = new ThreadView(msgSvc);
+		navigator = new Navigator(this, this);
+		navigator.addView("thread", threadView);
+		navigator.navigateTo("thread");
 	}
 }
