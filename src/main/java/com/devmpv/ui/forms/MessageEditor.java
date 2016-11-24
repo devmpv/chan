@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.easyuploads.UploadField.FieldType;
 
+import com.devmpv.model.BoardEnum;
 import com.devmpv.model.Message;
 import com.devmpv.model.Thread;
 import com.devmpv.service.MessageService;
@@ -43,6 +44,7 @@ public class MessageEditor extends Window {
 
 	private Message message;
 	private Thread thread;
+	private BoardEnum board;
 
 	private final TextField title = new TextField("Title");
 	private final TextArea text = new TextArea("Text");
@@ -53,8 +55,9 @@ public class MessageEditor extends Window {
 	private final HorizontalLayout actions = new HorizontalLayout(save, cancel);
 
 	@Autowired
-	public MessageEditor(MessageService msgSvc, Thread thread) {
+	public MessageEditor(MessageService msgSvc, Thread thread, BoardEnum board) {
 		this.thread = thread;
+		this.board = board;
 		VerticalLayout mainLayout = new VerticalLayout(title, text, upload, image1, actions);
 		mainLayout.setSpacing(false);
 		mainLayout.setMargin(true);
@@ -111,6 +114,9 @@ public class MessageEditor extends Window {
 
 	public final void editMessage() {
 		if (null == message) {
+			if (null == thread) {
+				thread = new Thread(board);
+			}
 			message = new Message(thread, "", "");
 			upload.clear();
 		}
@@ -122,10 +128,10 @@ public class MessageEditor extends Window {
 		return text;
 	}
 
-	public void setChangeHandler(ChangeHandler h) {
+	public void setChangeHandler(ChangeHandler handler) {
 		if (null != message) {
 			message = null;
 		}
-		h.onChange();
+		handler.onChange();
 	}
 }

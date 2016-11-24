@@ -14,13 +14,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.devmpv.model.Attachment;
+import com.devmpv.model.BoardEnum;
 import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.model.Thread;
 import com.devmpv.model.ThreadRepository;
 import com.devmpv.ui.BoardUI;
-import com.devmpv.ui.MessageLayout;
 import com.devmpv.ui.forms.PopupViewer;
+import com.devmpv.ui.layouts.MessageLayout;
+import com.devmpv.ui.layouts.ThreadPreviewLayout;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FileResource;
@@ -61,10 +63,21 @@ public class MessageService {
 
 	private TextProcessor processor = BBProcessorFactory.getInstance().create();
 
-	public List<Component> getMoreMessages(int page, int size, Sort sort) {
+	public List<Message> getMessages(Thread thread) {
+		return msgRepo.findByThreadOrderByTimestamp(thread);
+	}
+
+	public List<Component> getMoreMessages(Thread thread, int page, int size, Sort sort) {
 		List<Component> result = new ArrayList<>();
-		msgRepo.findAll(new PageRequest(page, size, sort))
+		msgRepo.findByThread(thread, new PageRequest(page, size, sort))
 				.forEach(msg -> result.add(new MessageLayout(msg, attachSvc, this)));
+		return result;
+	}
+
+	public List<Component> getMoreThreads(BoardEnum board, int page, int size, Sort sort) {
+		List<Component> result = new ArrayList<>();
+		threadRepo.findByBoard(board, new PageRequest(page, size, sort))
+				.forEach(thread -> result.add(new ThreadPreviewLayout(thread, attachSvc, this)));
 		return result;
 	}
 
@@ -78,13 +91,14 @@ public class MessageService {
 
 	@Transactional
 	public Message saveMessage(Message message, Object object) throws Exception {
-		message.setTimestamp(System.currentTimeMillis());
+		threadRepo.save(message.getThread());
 		Attachment attachment;
 		if (null != object) {
 			attachment = attachSvc.add((File) object);
 			message.getAttachments().add(attachment);
 		}
 		message.setText(processor.process(message.getText()));
+		message.setTimestamp(System.currentTimeMillis());
 		return msgRepo.save(message);
 	}
 

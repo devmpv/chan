@@ -11,9 +11,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Thread {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -21,10 +23,18 @@ public class Thread {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "thread")
 	private Set<Message> messages;
 
-	@Enumerated(EnumType.ORDINAL)
-	private BoardName board;
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private BoardEnum board;
 
-	public BoardName getBoard() {
+	public Thread() {
+	}
+
+	public Thread(BoardEnum board) {
+		this.board = board;
+	}
+
+	public BoardEnum getBoard() {
 		return board;
 	}
 
@@ -32,7 +42,7 @@ public class Thread {
 		return messages;
 	}
 
-	public void setBoard(BoardName board) {
+	public void setBoard(BoardEnum board) {
 		this.board = board;
 	}
 

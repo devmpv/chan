@@ -1,4 +1,4 @@
-package com.devmpv.ui;
+package com.devmpv.ui.layouts;
 
 import static com.vaadin.ui.themes.ChameleonTheme.PANEL_BUBBLE;
 
@@ -10,6 +10,7 @@ import org.vaadin.viritin.label.RichText;
 import com.devmpv.model.Message;
 import com.devmpv.service.AttachmentService;
 import com.devmpv.service.MessageService;
+import com.devmpv.ui.BoardUI;
 import com.devmpv.ui.forms.MessageEditor;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
