@@ -10,8 +10,8 @@ import org.vaadin.viritin.label.RichText;
 import com.devmpv.model.Message;
 import com.devmpv.service.AttachmentService;
 import com.devmpv.service.MessageService;
-import com.devmpv.ui.BoardUI;
 import com.devmpv.ui.forms.MessageEditor;
+import com.devmpv.ui.views.ChanView;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -35,7 +35,7 @@ public class MessageLayout extends Panel {
 
 		@Override
 		public void buttonClick(ClickEvent event) {
-			MessageEditor editor = ((BoardUI) UI.getCurrent()).getEditor();
+			MessageEditor editor = ((ChanView) UI.getCurrent().getNavigator().getCurrentView()).getEditor();
 			editor.editMessage();
 			editor.getText().setValue(
 					editor.getText().getValue().concat(">").concat((String) event.getButton().getData()).concat("\n"));

@@ -7,8 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.vaadin.spring.annotation.EnableVaadinNavigation;
+
 @Configuration
 @EnableTransactionManagement
+@EnableVaadinNavigation
 public class Config {
 
 	@Bean

@@ -19,10 +19,10 @@ import com.devmpv.model.Message;
 import com.devmpv.model.MessageRepository;
 import com.devmpv.model.Thread;
 import com.devmpv.model.ThreadRepository;
-import com.devmpv.ui.BoardUI;
 import com.devmpv.ui.forms.PopupViewer;
 import com.devmpv.ui.layouts.MessageLayout;
 import com.devmpv.ui.layouts.ThreadPreviewLayout;
+import com.devmpv.ui.views.ChanView;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FileResource;
@@ -47,7 +47,7 @@ public class MessageService {
 
 		@Override
 		public void click(ClickEvent event) {
-			PopupViewer popup = ((BoardUI) UI.getCurrent()).getPopup();
+			PopupViewer popup = ((ChanView) UI.getCurrent().getNavigator().getCurrentView()).getPopup();
 			Attachment attach = (Attachment) ((Image) event.getComponent()).getData();
 			if (!attach.equals(popup.getData())) {
 				Image img = new Image(null, new FileResource(attachSvc.getFile(attach)));

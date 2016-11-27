@@ -1,5 +1,8 @@
 package com.devmpv.ui.views;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.devmpv.config.Constant;
 import com.devmpv.model.Thread;
 import com.devmpv.service.MessageService;
 import com.devmpv.ui.forms.MessageEditor;
@@ -7,6 +10,7 @@ import com.devmpv.ui.forms.PopupViewer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -14,24 +18,26 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class ThreadView extends VerticalLayout implements View {
+@SpringView(name = Constant.URI_THREAD)
+public class ThreadView extends VerticalLayout implements View, ChanView {
 
 	private static final long serialVersionUID = -3492322718789886012L;
 
 	private static final int SIZE = 500;
+
+	@Autowired
+	private MessageService msgSvc;
 
 	private Button addNewBtn;
 	private TextField filter;
 	private MessageEditor editor;
 	private PopupViewer popup;
 	private Thread thread;
-	private MessageService msgSvc;
 
 	private VerticalLayout messageList;
 	private int page = 0;
 
-	public ThreadView(MessageService msgSvc) {
-		this.msgSvc = msgSvc;
+	public ThreadView() {
 		this.filter = new TextField();
 		this.addNewBtn = new Button("Reply", FontAwesome.PLUS);
 		this.popup = new PopupViewer();
@@ -77,10 +83,12 @@ public class ThreadView extends VerticalLayout implements View {
 		createThreadView(event.getParameters());
 	}
 
+	@Override
 	public MessageEditor getEditor() {
 		return editor;
 	}
 
+	@Override
 	public PopupViewer getPopup() {
 		return popup;
 	}
